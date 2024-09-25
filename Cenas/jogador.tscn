@@ -1,0 +1,107 @@
+[gd_scene load_steps=9 format=3 uid="uid://ik1sjssd1qip"]
+
+[ext_resource type="Script" path="res://Cenas/Jogador.gd" id="1_x5g1n"]
+[ext_resource type="Texture2D" uid="uid://coha1r5xx0cft" path="res://Sprites/jugador.png" id="2_gx56v"]
+[ext_resource type="AudioStream" uid="uid://b3i0h4o21ao61" path="res://Sprites/sfx/shoot.wav" id="3_j0fsf"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1e8ja"]
+size = Vector2(15, 6)
+
+[sub_resource type="Animation" id="Animation_b4faa"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+
+[sub_resource type="Animation" id="Animation_qhq7s"]
+resource_name = "destruido"
+length = 0.7
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [1]
+}
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.4),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"eliminado"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_83he7"]
+resource_name = "vivo"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_vtb51"]
+_data = {
+"RESET": SubResource("Animation_b4faa"),
+"destruido": SubResource("Animation_qhq7s"),
+"vivo": SubResource("Animation_83he7")
+}
+
+[node name="Jogador" type="CharacterBody2D" groups=["tanque"]]
+position = Vector2(124, 195)
+script = ExtResource("1_x5g1n")
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_gx56v")
+hframes = 2
+frame = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 1)
+shape = SubResource("RectangleShape2D_1e8ja")
+
+[node name="Mira" type="Marker2D" parent="."]
+position = Vector2(0, -13)
+
+[node name="timerDisparo" type="Timer" parent="."]
+wait_time = 0.4
+one_shot = true
+
+[node name="EfeitoTanque" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_vtb51")
+}
+autoplay = "vivo"
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_j0fsf")
+
+[connection signal="timeout" from="timerDisparo" to="." method="_on_timer_disparo_timeout"]
